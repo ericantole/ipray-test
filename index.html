@@ -44,18 +44,23 @@
             },
             animation: {
               'breathe': 'breathe 5s ease-in-out infinite',
+              'ripple': 'ripple 4s linear infinite',
               'rotate-slow': 'rotate 60s linear infinite',
               'fade-in': 'fadeIn 1s ease-out forwards',
               'slide-up': 'slideUp 0.6s ease-out forwards',
-              'fly': 'fly 40s linear infinite',
-              'fly-delayed': 'fly 45s linear infinite',
+              'fly': 'fly 35s linear infinite',
+              'fly-slow': 'fly 45s linear infinite',
               'twinkle': 'twinkle 4s ease-in-out infinite',
               'float': 'float 10s ease-in-out infinite',
             },
             keyframes: {
               breathe: {
                 '0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
-                '50%': { transform: 'scale(1.08)', opacity: '1' },
+                '50%': { transform: 'scale(1.05)', opacity: '1' },
+              },
+              ripple: {
+                '0%': { transform: 'scale(0.8)', opacity: '0.6' },
+                '100%': { transform: 'scale(2.5)', opacity: '0' },
               },
               rotate: {
                 'from': { transform: 'rotate(0deg)' },
@@ -70,10 +75,10 @@
                 'to': { opacity: '1', transform: 'translateY(0)' },
               },
               fly: {
-                '0%': { transform: 'translateX(-10vw) translateY(5vh) scale(0.8)', opacity: '0' },
-                '10%': { opacity: '0.6' },
-                '90%': { opacity: '0.6' },
-                '100%': { transform: 'translateX(110vw) translateY(-5vh) scale(0.8)', opacity: '0' },
+                '0%': { transform: 'translateX(-10vw) translateY(10vh) scale(0.6) rotate(5deg)', opacity: '0' },
+                '10%': { opacity: '0.8' },
+                '90%': { opacity: '0.8' },
+                '100%': { transform: 'translateX(110vw) translateY(-5vh) scale(0.6) rotate(0deg)', opacity: '0' },
               },
               twinkle: {
                 '0%, 100%': { opacity: '0.3', transform: 'scale(0.8)' },

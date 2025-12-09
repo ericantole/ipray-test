@@ -7,43 +7,61 @@ import { MORNING_DEVOTIONALS, NIGHT_COMFORTS } from '../constants';
 
 const DayBackground = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-    {/* Soft Gradient Sky */}
-    <div className="absolute inset-0 bg-gradient-to-b from-blue-50/80 via-amber-50/50 to-bg-light" />
+    {/* Soft Sky Gradient */}
+    <div className="absolute inset-0 bg-gradient-to-b from-blue-100/40 via-orange-50/40 to-bg-light" />
     
     {/* Sun Glow */}
-    <div className="absolute top-[-10%] right-[10%] w-[400px] h-[400px] bg-yellow-200/20 rounded-full blur-[100px]" />
+    <div className="absolute top-[-5%] right-[5%] w-[300px] h-[300px] bg-yellow-100 rounded-full blur-[80px] opacity-60" />
 
-    {/* Flying Birds (Subtle & Small) */}
-    <div className="absolute top-[15%] left-0 animate-fly opacity-0 text-gray-400/40">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M23 6l-11 9l-11-9" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </div>
-    <div className="absolute top-[20%] left-0 animate-fly-delayed opacity-0 text-gray-400/30" style={{ animationDelay: '10s', animationDuration: '50s' }}>
-       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M23 6l-11 9l-11-9" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+    {/* Birds Container */}
+    <div className="absolute inset-0 z-0 opacity-70">
+       {/* Bird 1 */}
+      <div className="absolute top-[18%] left-[-10%] animate-fly text-gray-400/50">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23 6l-11 9l-11-9" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+      {/* Bird 2 (delayed) */}
+      <div className="absolute top-[22%] left-[-10%] animate-fly-slow text-gray-400/40" style={{ animationDelay: '12s' }}>
+         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23 6l-11 9l-11-9" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
+       {/* Bird 3 (Small flock member) */}
+       <div className="absolute top-[19%] left-[-12%] animate-fly text-gray-400/40" style={{ animationDelay: '1s' }}>
+         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23 6l-11 9l-11-9" stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </div>
     </div>
 
-    {/* Abstract Scenic Hills (Soft Shapes) */}
-    {/* Back Hill */}
-    <div className="absolute bottom-0 left-[-20%] right-[-20%] h-[35vh] bg-[#E8E8E5] rounded-[100%] opacity-60" />
-    {/* Front Hill */}
-    <div className="absolute bottom-[-10%] left-[-10%] right-[-50%] h-[30vh] bg-[#E0E0DC] rounded-[100%] opacity-80" />
+    {/* Artistic Layered Mountains (SVG) */}
+    <div className="absolute bottom-0 left-0 right-0 h-[45vh] w-full">
+        <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+            {/* Background Mountain (Farthest, Lightest) */}
+            <path fill="#E0E7FF" fillOpacity="0.4" d="M0,224L60,213.3C120,203,240,181,360,181.3C480,181,600,203,720,213.3C840,224,960,224,1080,202.7C1200,181,1320,139,1380,117.3L1440,96L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"></path>
+            
+            {/* Mid Mountain */}
+            <path fill="#E8E8E5" fillOpacity="0.6" d="M0,256L80,240C160,224,320,192,480,197.3C640,203,800,245,960,250.7C1120,256,1280,224,1360,208L1440,192L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
+            
+            {/* Front Hill (Closest, slightly darker but still soft) */}
+            <path fill="#DFDFDB" fillOpacity="0.5" d="M0,288L48,272C96,256,192,224,288,218.7C384,213,480,235,576,245.3C672,256,768,256,864,240C960,224,1056,192,1152,192C1248,192,1344,224,1392,240L1440,256L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
   </div>
 );
 
 const NightBackground = () => {
   // Memoize stars to prevent re-render flickering
   const stars = useMemo(() => {
-    return Array.from({ length: 70 }).map((_, i) => ({
+    return Array.from({ length: 90 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 70}%`, // Avoid very bottom
-      size: Math.random() > 0.9 ? '3px' : Math.random() > 0.6 ? '2px' : '1.5px',
+      top: `${Math.random() * 80}%`, // Avoid very bottom
+      size: Math.random() > 0.8 ? '3px' : Math.random() > 0.5 ? '2px' : '1px',
       animationDelay: `${Math.random() * 5}s`,
       animationDuration: `${3 + Math.random() * 4}s`,
-      opacity: Math.random() * 0.6 + 0.2
+      opacity: Math.random() * 0.7 + 0.3
     }));
   }, []);
 
@@ -70,7 +88,7 @@ const NightBackground = () => {
       ))}
       
       {/* Subtle Horizon Glow */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-pink-900/10 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-pink-900/20 to-transparent" />
     </div>
   );
 };
@@ -96,7 +114,7 @@ export const TodayScreen: React.FC = () => {
   };
 
   return (
-    <div className={`relative h-screen w-full flex flex-col no-scrollbar overflow-y-auto transition-colors duration-1000 ${isNight ? 'bg-bg-night' : 'bg-bg-light'}`}>
+    <div className={`relative h-screen w-full flex flex-col no-scrollbar overflow-hidden transition-colors duration-1000 ${isNight ? 'bg-bg-night' : 'bg-bg-light'}`}>
       
       {/* Render Appropriate Background */}
       {isNight ? <NightBackground /> : <DayBackground />}
@@ -137,7 +155,7 @@ export const TodayScreen: React.FC = () => {
           <PrayButton onClick={handlePrayClick} theme={theme} />
         </div>
 
-        {/* Dynamic Card Container - Reverted to cleaner style */}
+        {/* Dynamic Card Container - Cleaner Style Restored */}
         <div className="w-full max-w-sm">
           
           {/* Day: Morning Devotional */}

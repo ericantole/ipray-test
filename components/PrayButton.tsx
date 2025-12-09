@@ -30,36 +30,49 @@ export const PrayButton: React.FC<PrayButtonProps> = ({ onClick, theme }) => {
 
   const isNight = theme === 'night';
   
-  // Refined Gradients for better blending
+  // Gradients for the main button
   const innerGradient = isNight 
     ? 'radial-gradient(circle at 40% 30%, #FFF0F5 0%, #E0A0B0 100%)' 
     : 'radial-gradient(circle at 40% 30%, #FFFFFA 0%, #D4AF37 100%)';
     
-  // The Halo needs to be very diffuse to "merge"
-  const haloColor = isNight 
-    ? 'radial-gradient(circle, rgba(241,182,198,0.4) 0%, rgba(241,182,198,0) 65%)' 
-    : 'radial-gradient(circle, rgba(199,139,74,0.3) 0%, rgba(199,139,74,0) 65%)';
+  // Color for the expanding ripples
+  const rippleColor = isNight
+    ? 'rgba(241,182,198, 0.4)' // Pinkish for night
+    : 'rgba(199,139,74, 0.25)'; // Goldish for day
 
   return (
-    // Increased wrapper size to allow the glow to fade naturally into the background
-    <div className="relative flex items-center justify-center w-[340px] h-[340px] mx-auto select-none">
+    <div className="relative flex items-center justify-center w-[300px] h-[300px] mx-auto select-none">
       
-      {/* Outer Merged Halo - Large diffuse glow that blends into bg */}
+      {/* Expanding Ripple Waves */}
+      {/* Wave 1 */}
       <div 
-        className="absolute inset-0 rounded-full animate-breathe pointer-events-none blur-3xl opacity-80"
-        style={{ background: haloColor }}
+        className="absolute w-48 h-48 rounded-full animate-ripple"
+        style={{ 
+          backgroundColor: rippleColor,
+          animationDelay: '0s'
+        }}
       />
-      
-      {/* Secondary Pulse Ring (Very subtle, wider) */}
+      {/* Wave 2 */}
       <div 
-         className={`absolute inset-12 rounded-full border-4 opacity-10 animate-breathe ${isNight ? 'border-pink-300' : 'border-amber-200'}`}
-         style={{ animationDelay: '1s' }}
+        className="absolute w-48 h-48 rounded-full animate-ripple"
+        style={{ 
+          backgroundColor: rippleColor,
+          animationDelay: '1.3s'
+        }}
+      />
+      {/* Wave 3 */}
+      <div 
+        className="absolute w-48 h-48 rounded-full animate-ripple"
+        style={{ 
+          backgroundColor: rippleColor,
+          animationDelay: '2.6s'
+        }}
       />
 
       {/* Main Button */}
       <button
         className={`relative z-10 w-48 h-48 rounded-full shadow-2xl transition-all duration-300 ease-out overflow-hidden outline-none cursor-pointer
-          ${isNight ? 'shadow-[0_20px_60px_-10px_rgba(241,182,198,0.3)]' : 'shadow-[0_20px_60px_-10px_rgba(199,139,74,0.3)]'}
+          ${isNight ? 'shadow-[0_15px_40px_-5px_rgba(241,182,198,0.4)]' : 'shadow-[0_15px_40px_-5px_rgba(199,139,74,0.4)]'}
         `}
         style={{
           background: innerGradient,
@@ -75,7 +88,7 @@ export const PrayButton: React.FC<PrayButtonProps> = ({ onClick, theme }) => {
         {/* Shine Sweep Effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_5s_infinite]" />
 
-        {/* Interaction Ripples */}
+        {/* Interaction Ripples (Click feedback) */}
         {ripples.map((ripple) => (
           <span
             key={ripple.id}
