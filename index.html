@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Daily Peace & Prayer</title>
+    <meta name="theme-color" content="#F7F7F4" />
+    
+    <!-- Fonts: Inter for UI, Merriweather for Reading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+              serif: ['Merriweather', 'Georgia', 'serif'],
+            },
+            colors: {
+              bg: {
+                light: '#F7F7F4',
+                night: '#0B1A23',
+                card: '#FFFFFF',
+                cardNight: '#152232'
+              },
+              text: {
+                primary: '#111111',
+                muted: '#6B7280',
+                night: '#F5F7FA',
+                nightMuted: '#9CA3AF'
+              },
+              accent: {
+                gold: '#C78B4A',
+                goldLight: '#FFF6E8',
+                pink: '#F1B6C6',
+                pinkLight: '#FFEFF4'
+              }
+            },
+            animation: {
+              'breathe': 'breathe 5s ease-in-out infinite',
+              'rotate-slow': 'rotate 60s linear infinite',
+              'fade-in': 'fadeIn 1s ease-out forwards',
+              'slide-up': 'slideUp 0.6s ease-out forwards',
+              'fly': 'fly 40s linear infinite',
+              'fly-delayed': 'fly 45s linear infinite',
+              'twinkle': 'twinkle 4s ease-in-out infinite',
+              'float': 'float 10s ease-in-out infinite',
+            },
+            keyframes: {
+              breathe: {
+                '0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
+                '50%': { transform: 'scale(1.08)', opacity: '1' },
+              },
+              rotate: {
+                'from': { transform: 'rotate(0deg)' },
+                'to': { transform: 'rotate(360deg)' },
+              },
+              fadeIn: {
+                'from': { opacity: '0' },
+                'to': { opacity: '1' },
+              },
+              slideUp: {
+                'from': { opacity: '0', transform: 'translateY(20px)' },
+                'to': { opacity: '1', transform: 'translateY(0)' },
+              },
+              fly: {
+                '0%': { transform: 'translateX(-10vw) translateY(5vh) scale(0.8)', opacity: '0' },
+                '10%': { opacity: '0.6' },
+                '90%': { opacity: '0.6' },
+                '100%': { transform: 'translateX(110vw) translateY(-5vh) scale(0.8)', opacity: '0' },
+              },
+              twinkle: {
+                '0%, 100%': { opacity: '0.3', transform: 'scale(0.8)' },
+                '50%': { opacity: '0.9', transform: 'scale(1.2)' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-15px)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Base styles for accessibility and scrollbars */
+      body {
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior-y: none;
+      }
+      /* Hide scrollbar for Chrome, Safari and Opera */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      /* Hide scrollbar for IE, Edge and Firefox */
+      .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.1/",
+    "react": "https://aistudiocdn.com/react@^19.2.1",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.1/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.556.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.10.1"
+  }
+}
+</script>
+</head>
+  <body class="bg-bg-light dark:bg-bg-night text-text-primary dark:text-text-night antialiased transition-colors duration-500 selection:bg-accent-gold selection:text-white">
+    <div id="root"></div>
+  </body>
+</html>
