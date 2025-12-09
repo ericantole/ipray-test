@@ -1,3 +1,4 @@
+
 export type Theme = 'day' | 'night' | 'auto';
 export type TextSize = 'small' | 'medium' | 'large';
 

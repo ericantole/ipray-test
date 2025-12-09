@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Theme, TextSize, UserEntitlement } from '../types';
 import { StorageService } from '../services/storage';
@@ -31,15 +32,22 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Theme Side Effects
   useEffect(() => {
     const root = window.document.documentElement;
-    const isNight = theme === 'night' || (theme === 'auto' && new Date().getHours() >= 19);
+    const hour = new Date().getHours();
     
-    if (isNight) {
-      root.classList.add('dark');
-      root.setAttribute('data-theme', 'night');
-    } else {
-      root.classList.remove('dark');
-      root.setAttribute('data-theme', 'day');
+    let activeTheme = theme;
+    if (theme === 'auto') {
+      if (hour >= 20 || hour < 6) activeTheme = 'night';
+      else activeTheme = 'day';
     }
+
+    // Reset classes/attributes
+    root.classList.remove('dark');
+    root.setAttribute('data-theme', activeTheme);
+
+    if (activeTheme === 'night') {
+      root.classList.add('dark');
+    }
+    
   }, [theme]);
 
   // Text Size Class Injection

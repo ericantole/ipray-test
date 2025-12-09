@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Daily Peace & Prayer</title>
+    <title>iPray-Daily Peace & Prayer</title>
     <meta name="theme-color" content="#F7F7F4" />
     
     <!-- Fonts: Inter for UI, Merriweather for Reading -->
@@ -39,7 +39,7 @@
                 gold: '#C78B4A',
                 goldLight: '#FFF6E8',
                 pink: '#F1B6C6',
-                pinkLight: '#FFEFF4'
+                pinkLight: '#FFEFF4',
               }
             },
             animation: {
@@ -50,8 +50,11 @@
               'slide-up': 'slideUp 0.6s ease-out forwards',
               'fly': 'fly 35s linear infinite',
               'fly-slow': 'fly 45s linear infinite',
+              'flap': 'flap 0.6s ease-in-out infinite alternate',
               'twinkle': 'twinkle 4s ease-in-out infinite',
+              'shoot': 'shoot 8s ease-in-out infinite',
               'float': 'float 10s ease-in-out infinite',
+              'drift': 'drift 60s linear infinite',
             },
             keyframes: {
               breathe: {
@@ -59,7 +62,7 @@
                 '50%': { transform: 'scale(1.05)', opacity: '1' },
               },
               ripple: {
-                '0%': { transform: 'scale(0.8)', opacity: '0.6' },
+                '0%': { transform: 'scale(0.8)', opacity: '0.4' },
                 '100%': { transform: 'scale(2.5)', opacity: '0' },
               },
               rotate: {
@@ -75,10 +78,20 @@
                 'to': { opacity: '1', transform: 'translateY(0)' },
               },
               fly: {
-                '0%': { transform: 'translateX(-10vw) translateY(10vh) scale(0.6) rotate(5deg)', opacity: '0' },
-                '10%': { opacity: '0.8' },
+                '0%': { transform: 'translateX(-20vw) translateY(5vh) scale(0.6)', opacity: '0' },
+                '5%': { opacity: '0.8' },
                 '90%': { opacity: '0.8' },
-                '100%': { transform: 'translateX(110vw) translateY(-5vh) scale(0.6) rotate(0deg)', opacity: '0' },
+                '100%': { transform: 'translateX(120vw) translateY(-5vh) scale(0.6)', opacity: '0' },
+              },
+              flap: {
+                '0%': { transform: 'translateY(0) scaleY(1)' },
+                '100%': { transform: 'translateY(-3px) scaleY(0.6)' },
+              },
+              shoot: {
+                '0%': { transform: 'translateX(0) translateY(0) rotate(-45deg)', opacity: '0' },
+                '10%': { opacity: '1' },
+                '20%': { transform: 'translateX(-300px) translateY(300px) rotate(-45deg)', opacity: '0' },
+                '100%': { transform: 'translateX(-300px) translateY(300px) rotate(-45deg)', opacity: '0' },
               },
               twinkle: {
                 '0%, 100%': { opacity: '0.3', transform: 'scale(0.8)' },
@@ -87,7 +100,12 @@
               float: {
                 '0%, 100%': { transform: 'translateY(0)' },
                 '50%': { transform: 'translateY(-15px)' },
-              }
+              },
+              drift: {
+                '0%': { transform: 'translateX(-5%)' },
+                '50%': { transform: 'translateX(5%)' },
+                '100%': { transform: 'translateX(-5%)' },
+              },
             }
           }
         }

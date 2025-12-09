@@ -1,3 +1,4 @@
+
 import { Prayer, UserEntitlement, DailyState } from '../types';
 import { STORAGE_KEYS } from '../constants';
 
@@ -58,5 +59,9 @@ export const StorageService = {
 
   completeOnboarding: (): void => {
     localStorage.setItem(STORAGE_KEYS.ONBOARDING, 'true');
+  },
+
+  resetOnboarding: (): void => {
+    localStorage.removeItem(STORAGE_KEYS.ONBOARDING);
   }
 };

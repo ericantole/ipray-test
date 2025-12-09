@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 
@@ -30,20 +31,45 @@ export const PrayButton: React.FC<PrayButtonProps> = ({ onClick, theme }) => {
 
   const isNight = theme === 'night';
   
-  // Gradients for the main button
-  const innerGradient = isNight 
-    ? 'radial-gradient(circle at 40% 30%, #FFF0F5 0%, #E0A0B0 100%)' 
-    : 'radial-gradient(circle at 40% 30%, #FFFFFA 0%, #D4AF37 100%)';
+  // Gradients
+  let innerGradient;
+  if (isNight) {
+    innerGradient = 'radial-gradient(circle at 40% 30%, #FFF0F5 0%, #E0A0B0 100%)';
+  } else {
+    innerGradient = 'radial-gradient(circle at 35% 30%, #FFFCF5 0%, #F9E2AF 40%, #D4AF37 100%)'; // Holy Gold
+  }
     
-  // Color for the expanding ripples
-  const rippleColor = isNight
-    ? 'rgba(241,182,198, 0.4)' // Pinkish for night
-    : 'rgba(199,139,74, 0.25)'; // Goldish for day
+  // Ripple Colors
+  let rippleColor;
+  if (isNight) {
+    rippleColor = 'rgba(241,182,198, 0.35)';
+  } else {
+    rippleColor = 'rgba(255, 215, 0, 0.3)';
+  }
+
+  // Shadow color
+  let shadowClass;
+  if (isNight) {
+    shadowClass = 'shadow-[0_15px_40px_-5px_rgba(241,182,198,0.3)]';
+  } else {
+    shadowClass = 'shadow-[0_20px_50px_-10px_rgba(212,175,55,0.5)]';
+  }
+
+  // Text Color
+  let textColor;
+  let iconColor;
+  if (isNight) {
+    textColor = 'text-pink-950';
+    iconColor = 'text-pink-900';
+  } else {
+    textColor = 'text-amber-900';
+    iconColor = 'text-amber-800';
+  }
 
   return (
     <div className="relative flex items-center justify-center w-[300px] h-[300px] mx-auto select-none">
       
-      {/* Expanding Ripple Waves */}
+      {/* Expanding Ripple Waves - Subtle Aura */}
       {/* Wave 1 */}
       <div 
         className="absolute w-48 h-48 rounded-full animate-ripple"
@@ -71,9 +97,7 @@ export const PrayButton: React.FC<PrayButtonProps> = ({ onClick, theme }) => {
 
       {/* Main Button */}
       <button
-        className={`relative z-10 w-48 h-48 rounded-full shadow-2xl transition-all duration-300 ease-out overflow-hidden outline-none cursor-pointer
-          ${isNight ? 'shadow-[0_15px_40px_-5px_rgba(241,182,198,0.4)]' : 'shadow-[0_15px_40px_-5px_rgba(199,139,74,0.4)]'}
-        `}
+        className={`relative z-10 w-48 h-48 rounded-full transition-all duration-300 ease-out overflow-hidden outline-none cursor-pointer ${shadowClass}`}
         style={{
           background: innerGradient,
           transform: isPressed ? 'scale(0.96)' : 'scale(1)',
@@ -83,7 +107,7 @@ export const PrayButton: React.FC<PrayButtonProps> = ({ onClick, theme }) => {
         aria-label="Start Prayer"
       >
         {/* Subtle inner sheen */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/40 to-white/0 opacity-60" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/50 to-white/0 opacity-60" />
         
         {/* Shine Sweep Effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_5s_infinite]" />
@@ -107,10 +131,10 @@ export const PrayButton: React.FC<PrayButtonProps> = ({ onClick, theme }) => {
         {/* Content */}
         <div className="flex flex-col items-center justify-center h-full relative z-20">
           <Sparkles 
-            className={`w-8 h-8 mb-2 transition-colors duration-500 ${isNight ? 'text-pink-900 opacity-60' : 'text-amber-900 opacity-50'}`} 
+            className={`w-8 h-8 mb-2 transition-colors duration-500 opacity-60 ${iconColor}`} 
             strokeWidth={1.5} 
           />
-          <span className={`text-2xl font-bold tracking-[0.2em] font-sans transition-colors duration-500 ${isNight ? 'text-pink-950' : 'text-amber-950'}`}>
+          <span className={`text-2xl font-bold tracking-[0.2em] font-sans transition-colors duration-500 ${textColor}`}>
             PRAY
           </span>
         </div>
