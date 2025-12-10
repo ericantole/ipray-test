@@ -4,11 +4,11 @@
 Write-Host "🔧 Setting up Auto-Sync..." -ForegroundColor Cyan
 
 # Create post-commit hook for Windows
-$hookContent = @"
+$hookContent = @'
 @echo off
 echo ⬆️  Auto-pushing to GitHub...
 git push origin main
-"@
+'@
 
 $hookPath = ".git\hooks\post-commit"
 $hookContent | Out-File -FilePath $hookPath -Encoding ASCII -Force
