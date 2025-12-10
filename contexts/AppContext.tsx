@@ -10,6 +10,7 @@ interface AppContextType {
   setTextSize: (size: TextSize) => void;
   entitlement: UserEntitlement;
   unlockPremium: () => void;
+  resetEntitlement: () => void;
   showPaywall: boolean;
   setShowPaywall: (show: boolean) => void;
   triggerPaywall: () => void;
@@ -63,6 +64,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setShowPaywall(false);
   };
 
+  const resetEntitlement = async () => {
+    await StorageService.resetEntitlement();
+    setEntitlement({ isPremium: false });
+    setShowPaywall(false);
+  };
+
   const triggerPaywall = () => {
     if (!entitlement.isPremium) {
       setShowPaywall(true);
@@ -73,7 +80,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     <AppContext.Provider value={{
       theme, setTheme,
       textSize, setTextSize,
-      entitlement, unlockPremium,
+      entitlement, unlockPremium, resetEntitlement,
       showPaywall, setShowPaywall,
       triggerPaywall
     }}>

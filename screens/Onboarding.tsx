@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Check, MessageCircle, Heart, Pencil, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronRight, Check, MessageCircle, Heart, Pencil, ChevronDown, ChevronUp, Star } from 'lucide-react';
 import { StorageService } from '../services/storage';
 import { PrayButton } from '../components/PrayButton';
 import { DayBackground, NightBackground } from '../components/Backgrounds';
+import { useApp } from '../contexts/AppContext';
 
 // --- Typewriter Component ---
 const TypewriterText = ({ text, speed = 40 }: { text: string; speed?: number }) => {
@@ -30,14 +31,16 @@ const TypewriterText = ({ text, speed = 40 }: { text: string; speed?: number }) 
 export const OnboardingScreen: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
+  const { setShowPaywall } = useApp();
 
   const handleFinish = () => {
     StorageService.completeOnboarding();
+    setShowPaywall(true);
     navigate('/today', { replace: true });
   };
 
   const handleNext = () => {
-    if (currentSlide < 3) {
+    if (currentSlide < slides.length - 1) {
       setCurrentSlide(prev => prev + 1);
     } else {
       handleFinish();
@@ -68,7 +71,7 @@ export const OnboardingScreen: React.FC = () => {
 
       {/* Skip Button */}
       <div className="absolute top-safe-top left-0 w-full z-20 flex justify-end p-6">
-        {currentSlide < 3 && (
+        {currentSlide < slides.length - 1 && (
           <button 
             onClick={handleFinish}
             className={`text-sm font-bold opacity-60 hover:opacity-100 transition-opacity ${textColor}`}
@@ -163,10 +166,10 @@ export const OnboardingScreen: React.FC = () => {
             {/* Slide 3: Prayer Space - Perfectly Centered */}
             {currentSlide === 3 && (
                 <div className="flex flex-col items-center justify-center w-full px-8 animate-slide-up">
-                    <div className="w-full max-w-xs h-64 flex items-center justify-center mb-8 relative">
+                    <div className="w-full max-w-xs flex flex-col items-center justify-center mb-6 relative transition-all duration-500">
                         {current.content}
                     </div>
-                    <div className="text-center w-full max-w-xs">
+                    <div className="text-center w-full max-w-xs transition-all duration-500">
                          <h1 className="text-3xl font-serif font-bold mb-3 text-text-primary">Your prayer space.</h1>
                           <p className="text-lg leading-relaxed opacity-80 text-text-primary">
                             Keep your prayers safe here.
@@ -198,7 +201,7 @@ export const OnboardingScreen: React.FC = () => {
                 onClick={handleNext}
                 className={`flex items-center gap-2 px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all active:scale-95 ${accentColor}`}
               >
-                {currentSlide === 3 ? 'Enter App' : 'Next'}
+                {currentSlide === slides.length - 1 ? 'Enter App' : 'Next'}
                 <ChevronRight size={20} />
               </button>
             </div>
@@ -222,7 +225,7 @@ const WelcomeSlide = () => (
 
       <div className="pt-4 text-center">
         <p className="font-serif text-2xl text-gray-800 leading-relaxed min-h-[90px] flex items-center justify-center italic">
-          <TypewriterText text={`"You are loved. You are held. You are never alone."`} />
+          “You are loved. You are held. You are never alone.”
         </p>
       </div>
 
@@ -350,18 +353,20 @@ const PrayerSpacePreview = () => {
   }, [isTyping, displayedText, isSaved, isGratitudeExpanded, handleSaveGratitude]);
 
   return (
-    <div className="w-full flex flex-col items-center justify-center relative">
+    <div className="w-full flex flex-col items-center justify-center relative transition-all duration-500 pt-14">
      
-     {/* Background Pile of Cards (Layered/Folder Effect) */}
-     {/* Layer 3 (Bottom) - Transparent */}
-     <div className="absolute w-[80%] h-36 bg-white/20 border border-white/30 rounded-xl transform -translate-y-8 scale-90 shadow-sm z-0 top-1/2 -translate-y-1/2"></div>
-     {/* Layer 2 (Middle) - Semi Transparent */}
-     <div className="absolute w-[88%] h-36 bg-white/40 border border-white/40 rounded-xl transform -translate-y-5 scale-95 shadow-sm z-10 top-1/2 -translate-y-1/2"></div>
+     {/* Background Pile of Cards (Layered/Folder Effect) - Stacked just behind the main card */}
+     {/* Layer 3 (Bottom/Back) */}
+     <div className="absolute w-[78%] h-28 bg-white/15 border border-white/25 rounded-xl shadow-sm z-0 top-12 left-1/2 -translate-x-1/2 transform rotate-[-2deg]"></div>
+     {/* Layer 2 (Middle) */}
+     <div className="absolute w-[84%] h-28 bg-white/25 border border-white/30 rounded-xl shadow-sm z-10 top-14 left-1/2 -translate-x-1/2 transform rotate-[1deg]"></div>
+     {/* Layer 1 (Front) */}
+     <div className="absolute w-[90%] h-28 bg-white/35 border border-white/35 rounded-xl shadow-md z-20 top-16 left-1/2 -translate-x-1/2"></div>
      
      {/* Main Active Card with Gratitude Box attached */}
-     <div className="relative w-full z-20 flex flex-col">
+     <div className="relative w-full z-30 flex flex-col transition-all duration-500">
         {/* Prayer Card */}
-        <div className="bg-white border border-white/80 rounded-t-2xl shadow-2xl p-6 flex flex-col justify-between min-h-[160px] relative">
+       <div className="bg-white border border-accent-gold/30 rounded-t-2xl rounded-b-none border-b-0 shadow-[0_20px_60px_-20px_rgba(199,139,74,0.35)] p-6 flex flex-col justify-between min-h-[170px] relative">
           <div className="flex justify-between items-start mb-2">
               <span className="text-xs opacity-50 uppercase tracking-wide font-bold">My Prayer • Just now</span>
           </div>
@@ -384,16 +389,11 @@ const PrayerSpacePreview = () => {
           </div>
         </div>
 
-        {/* Separator Line - Between prayer card and gratitude section */}
-        {showGratitudeStrip && (
-          <div className="w-full h-[1px] bg-gray-200/60 z-25"></div>
-        )}
-
         {/* Gratitude Strip - Small rectangle attached below */}
         {showGratitudeStrip && !isGratitudeExpanded && (
           <div 
             onClick={handleExpandGratitude}
-            className="bg-gradient-to-br from-accent-goldLight to-white border-x-2 border-b-2 border-accent-gold/30 rounded-b-2xl shadow-lg -mt-px z-30 cursor-pointer hover:bg-accent-goldLight/80 transition-colors animate-[slideUp_0.4s_ease-out_forwards]"
+            className="bg-gradient-to-br from-accent-goldLight to-white border-2 border-t border-accent-gold/30 rounded-b-2xl shadow-lg z-30 cursor-pointer hover:bg-accent-goldLight/80 transition-colors animate-[slideUp_0.4s_ease-out_forwards]"
           >
             <div className="px-6 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -416,7 +416,7 @@ const PrayerSpacePreview = () => {
 
         {/* Expanded Gratitude Message Box */}
         {isGratitudeExpanded && (
-          <div className="bg-gradient-to-br from-accent-goldLight to-white border-x-2 border-b-2 border-accent-gold/30 rounded-b-2xl shadow-xl -mt-px z-30 animate-[slideUp_0.5s_ease-out_forwards] relative">
+          <div className="bg-gradient-to-br from-accent-goldLight to-white border-2 border-t border-accent-gold/30 rounded-b-2xl shadow-xl z-30 animate-[slideUp_0.5s_ease-out_forwards] relative">
             <div className="p-6">
               {/* Header */}
               <div className="flex items-center justify-between mb-4">

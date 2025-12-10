@@ -7,11 +7,12 @@ import { StorageService } from '../services/storage';
 
 export const SettingsScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { theme, setTheme, textSize, setTextSize } = useApp();
+  const { theme, setTheme, textSize, setTextSize, resetEntitlement } = useApp();
   const isNight = theme === 'night';
 
-  const handleResetOnboarding = () => {
+  const handleResetOnboarding = async () => {
     StorageService.resetOnboarding();
+    await resetEntitlement();
     navigate('/onboarding', { replace: true });
   };
 

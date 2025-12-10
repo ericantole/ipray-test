@@ -79,3 +79,4 @@ Run: `.\setup-auto-sync.ps1`
 
 **🎉 You're all set! Changes will now automatically sync to GitHub!**
 
+

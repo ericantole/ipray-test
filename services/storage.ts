@@ -63,5 +63,9 @@ export const StorageService = {
 
   resetOnboarding: (): void => {
     localStorage.removeItem(STORAGE_KEYS.ONBOARDING);
+  },
+
+  resetEntitlement: async (): Promise<void> => {
+    localStorage.setItem(STORAGE_KEYS.ENTITLEMENT, JSON.stringify({ isPremium: false }));
   }
 };

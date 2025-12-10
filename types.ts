@@ -8,6 +8,7 @@ export interface Prayer {
   text: string;
   createdAt: string; // ISO String
   answeredAt?: string | null;
+  gratitudeMessage?: string;
 }
 
 export interface ContentItem {
