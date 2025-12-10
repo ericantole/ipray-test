@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Theme, TextSize, UserEntitlement } from '../types';
+import { Theme, TextSize, UserEntitlement, SubscriptionPlan } from '../types';
 import { StorageService } from '../services/storage';
 
 interface AppContextType {
@@ -9,11 +9,15 @@ interface AppContextType {
   textSize: TextSize;
   setTextSize: (size: TextSize) => void;
   entitlement: UserEntitlement;
-  unlockPremium: () => void;
+  unlockPremium: (plan?: SubscriptionPlan) => void;
   resetEntitlement: () => void;
   showPaywall: boolean;
   setShowPaywall: (show: boolean) => void;
   triggerPaywall: () => void;
+  showSplash: boolean;
+  setShowSplash: (show: boolean) => void;
+  triggerSplash: (onFinish?: () => void) => void;
+  splashCallback: (() => void) | null;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -23,6 +27,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [textSize, setTextSize] = useState<TextSize>('medium');
   const [entitlement, setEntitlement] = useState<UserEntitlement>({ isPremium: false });
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showSplash, setShowSplash] = useState(true); // Show splash on initial load
+  const [splashCallback, setSplashCallback] = useState<(() => void) | null>(null);
 
   // Initialize Data
   useEffect(() => {
@@ -57,8 +63,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     root.style.setProperty('--text-scale', textSize === 'small' ? '0.9' : textSize === 'large' ? '1.2' : '1');
   }, [textSize]);
 
-  const unlockPremium = async () => {
-    const newEntitlement = { isPremium: true, expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() }; // 5 days demo
+  const unlockPremium = async (plan: SubscriptionPlan = 'trial') => {
+    const newEntitlement = { 
+      isPremium: true, 
+      expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days demo
+      plan 
+    };
     await StorageService.setEntitlement(newEntitlement);
     setEntitlement(newEntitlement);
     setShowPaywall(false);
@@ -66,7 +76,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const resetEntitlement = async () => {
     await StorageService.resetEntitlement();
-    setEntitlement({ isPremium: false });
+    setEntitlement({ isPremium: false, plan: 'free' });
     setShowPaywall(false);
   };
 
@@ -76,13 +86,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  const triggerSplash = (onFinish?: () => void) => {
+    setSplashCallback(onFinish || null);
+    setShowSplash(true);
+  };
+
   return (
     <AppContext.Provider value={{
       theme, setTheme,
       textSize, setTextSize,
       entitlement, unlockPremium, resetEntitlement,
       showPaywall, setShowPaywall,
-      triggerPaywall
+      triggerPaywall,
+      showSplash, setShowSplash,
+      triggerSplash,
+      splashCallback
     }}>
       {children}
     </AppContext.Provider>

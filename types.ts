@@ -25,13 +25,28 @@ export interface LibrarySection {
   items: ContentItem[];
 }
 
+export type SubscriptionPlan = 'free' | 'trial' | 'monthly' | 'yearly';
+
 export interface UserEntitlement {
   isPremium: boolean;
   expiry?: string;
+  plan?: SubscriptionPlan;
 }
 
 export interface DailyState {
   lastPrayerTime: string | null; // ISO String
   nightComfortRead: boolean;
   dailyStreak: number;
+}
+
+export interface GuidedSession {
+  theme: string;
+  scriptureLine?: string;
+  steps: string[];
+}
+
+export interface GuidedDay {
+  day: number;
+  morning: GuidedSession;
+  night: GuidedSession;
 }

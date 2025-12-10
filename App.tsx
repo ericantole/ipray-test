@@ -1,9 +1,10 @@
 
 import React from 'react';
 import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AppProvider } from './contexts/AppContext';
+import { AppProvider, useApp } from './contexts/AppContext';
 import { Navigation } from './components/Navigation';
 import { PaywallModal } from './components/PaywallModal';
+import { SplashScreen } from './components/SplashScreen';
 import { StorageService } from './services/storage';
 
 // Screens
@@ -41,12 +42,32 @@ const InnerApp: React.FC = () => {
   );
 };
 
+const AppContent: React.FC = () => {
+  const { showSplash, setShowSplash, splashCallback } = useApp();
+
+  const handleSplashFinish = () => {
+    if (splashCallback) {
+      splashCallback();
+    }
+    setShowSplash(false);
+  };
+
+  return (
+    <>
+      {showSplash && <SplashScreen onFinish={handleSplashFinish} />}
+      {!showSplash && (
+        <HashRouter>
+          <InnerApp />
+        </HashRouter>
+      )}
+    </>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <AppProvider>
-      <HashRouter>
-        <InnerApp />
-      </HashRouter>
+      <AppContent />
     </AppProvider>
   );
 };

@@ -1,23 +1,36 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Type, Moon, LogOut } from 'lucide-react';
+import { ArrowLeft, LogOut, User, ShieldCheck, ExternalLink, FileText } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
 import { StorageService } from '../services/storage';
 
 export const SettingsScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { theme, setTheme, textSize, setTextSize, resetEntitlement } = useApp();
+  const { theme, resetEntitlement, triggerPaywall, entitlement, triggerSplash } = useApp();
   const isNight = theme === 'night';
 
   const handleResetOnboarding = async () => {
     StorageService.resetOnboarding();
     await resetEntitlement();
-    navigate('/onboarding', { replace: true });
+    // Show splash screen, then navigate after it finishes
+    triggerSplash(() => {
+      navigate('/onboarding', { replace: true });
+    });
   };
 
   return (
-    <div className={`min-h-screen pb-24 ${isNight ? 'bg-bg-night text-white' : 'bg-bg-light text-text-primary'}`}>
+    <>
+      <style>{`
+        .settings-scroll::-webkit-scrollbar {
+          display: none;
+        }
+        .settings-scroll {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
+      <div className={`h-screen overflow-y-auto no-scrollbar settings-scroll ${isNight ? 'bg-bg-night text-white' : 'bg-bg-light text-text-primary'}`}>
       <div className="px-6 py-6 flex items-center gap-4">
         <button onClick={() => navigate(-1)} className="p-2 -ml-2">
           <ArrowLeft size={24} />
@@ -25,41 +38,75 @@ export const SettingsScreen: React.FC = () => {
         <h1 className="text-2xl font-bold">Settings</h1>
       </div>
 
-      <div className="px-6 space-y-8">
-        
-        {/* Text Size */}
-        <section>
-          <h2 className="text-sm font-bold uppercase opacity-50 mb-4 flex items-center gap-2">
-            <Type size={16} /> Text Size
-          </h2>
-          <div className={`flex rounded-xl p-1 ${isNight ? 'bg-gray-800' : 'bg-gray-200'}`}>
-             {(['small', 'medium', 'large'] as const).map((size) => (
-               <button
-                 key={size}
-                 onClick={() => setTextSize(size)}
-                 className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${textSize === size ? (isNight ? 'bg-gray-600 shadow' : 'bg-white shadow') : 'opacity-50'}`}
-               >
-                 {size === 'small' ? 'A' : size === 'medium' ? 'Aa' : 'Aaa'}
-               </button>
-             ))}
+      <div className="px-6 space-y-4 pb-24">
+
+        {/* Account */}
+        <section className={`rounded-2xl border ${isNight ? 'border-gray-800 bg-white/5' : 'border-gray-200 bg-white'} p-4 space-y-3`}>
+          <div className="flex items-center gap-3">
+            <User size={18} />
+            <div>
+              <p className="text-sm font-semibold">Account</p>
+              <p className="text-xs opacity-70">Not signed in</p>
+            </div>
           </div>
         </section>
 
-        {/* Theme */}
-        <section>
-          <h2 className="text-sm font-bold uppercase opacity-50 mb-4 flex items-center gap-2">
-            <Moon size={16} /> Appearance
-          </h2>
-          <div className={`flex rounded-xl p-1 ${isNight ? 'bg-gray-800' : 'bg-gray-200'}`}>
-             {(['day', 'night', 'auto'] as const).map((t) => (
-               <button
-                 key={t}
-                 onClick={() => setTheme(t)}
-                 className={`flex-1 py-3 rounded-lg text-[10px] sm:text-xs font-medium transition-all capitalize ${theme === t ? (isNight ? 'bg-gray-600 shadow' : 'bg-white shadow') : 'opacity-50'}`}
-               >
-                 {t}
-               </button>
-             ))}
+        {/* Subscription */}
+        <section className={`rounded-2xl border ${isNight ? 'border-gray-800 bg-white/5' : 'border-gray-200 bg-white'} p-4 space-y-3`}>
+          <div className="flex items-center gap-3">
+            <ShieldCheck size={18} />
+            <div>
+              <p className="text-sm font-semibold">Subscription</p>
+              <p className="text-xs opacity-70">
+                Status: {entitlement.isPremium ? 'Active' : 'Not subscribed'}
+              </p>
+            </div>
+          </div>
+          {entitlement.isPremium ? (
+            <>
+              <p className="text-sm">
+                Plan: {entitlement.plan ? entitlement.plan.charAt(0).toUpperCase() + entitlement.plan.slice(1) : 'Trial'}
+              </p>
+              <p className="text-xs opacity-70 italic">
+                Your faithfulness is seen, and God is watching over you.
+              </p>
+              <div className="flex items-center gap-1 text-[8px] opacity-20">
+                <ExternalLink size={8} />
+                <span>Manage subscription (coming soon)</span>
+              </div>
+            </>
+          ) : (
+            <button
+              onClick={triggerPaywall}
+              className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isNight 
+                  ? 'bg-accent-pink text-bg-night hover:bg-pink-400' 
+                  : 'bg-accent-gold text-white hover:bg-yellow-600'
+              }`}
+            >
+              Upgrade to Premium
+            </button>
+          )}
+        </section>
+
+        {/* Privacy Policy */}
+        <section className={`rounded-2xl border ${isNight ? 'border-gray-800 bg-white/5' : 'border-gray-200 bg-white'} p-4 space-y-3`}>
+          <div className="flex items-center gap-3">
+            <FileText size={18} />
+            <div>
+              <p className="text-sm font-semibold">Privacy Policy</p>
+              <p className="text-xs opacity-70">Read how we handle data and privacy.</p>
+            </div>
+          </div>
+          <div className="text-xs opacity-80 space-y-2">
+            <p>We collect minimal data to provide the app experience. We do not sell personal data.</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Account (when signed in): name from Google sign-in to personalize your profile.</li>
+              <li>Local data: your saved prayers and settings are stored on-device.</li>
+              <li>Billing: subscriptions are processed by Google Play; we don’t store card details.</li>
+              <li>Analytics: if enabled later, only aggregated, non-identifying events.</li>
+            </ul>
+            <p>Your rights: you can delete local data via the app and manage subscriptions in Google Play.</p>
           </div>
         </section>
 
@@ -74,7 +121,7 @@ export const SettingsScreen: React.FC = () => {
               }`}
           >
             <LogOut size={16} />
-            Reset Onboarding (Log Out)
+            Log Out
           </button>
         </section>
 
@@ -86,5 +133,6 @@ export const SettingsScreen: React.FC = () => {
 
       </div>
     </div>
+    </>
   );
 };

@@ -51,14 +51,11 @@ export const PaywallModal: React.FC = () => {
         />
 
         <div className="relative w-full max-w-[380px] max-h-[90vh] animate-slide-up">
-          <div
-            className="absolute inset-0 rounded-[32px] p-[2px] pointer-events-none"
-            style={{ animation: 'paywallBorderSpin 14s linear infinite' }}
-          >
-            <div className="w-full h-full rounded-[30px] bg-[conic-gradient(from_0deg,_#F1B6C6,_#C78B4A,_#F1B6C6)] opacity-70 blur-[0.5px]" />
+          <div className="absolute inset-0 rounded-[32px] pointer-events-none overflow-hidden z-30">
+            <div className="absolute inset-0 rounded-[32px] border border-white/10" />
           </div>
 
-          <div className="relative w-full max-h-[90vh] bg-black/88 rounded-3xl sm:rounded-[32px] overflow-hidden shadow-2xl">
+          <div className="relative w-full max-h-[90vh] bg-black/88 rounded-3xl sm:rounded-[32px] overflow-hidden shadow-2xl z-10">
             <div className="absolute inset-0">
               <NightBackground />
               <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/15 to-black/60" />
@@ -149,7 +146,7 @@ export const PaywallModal: React.FC = () => {
                 </div>
 
                 <button
-                  onClick={unlockPremium}
+                  onClick={() => unlockPremium(selectedPlan)}
                   className={`w-full py-3.5 rounded-2xl font-bold text-base shadow-xl active:scale-95 transition ${primaryBtn} ${primaryText}`}
                 >
                   {selectedPlan === 'trial' ? 'Start $0 Premium Trial' : selectedPlan === 'monthly' ? 'Choose Monthly - $7.77' : 'Choose Yearly - $77.77'}
@@ -167,12 +164,7 @@ export const PaywallModal: React.FC = () => {
           </div>
         </div>
       </div>
-      <style>{`
-        @keyframes paywallBorderSpin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
+      <style>{``}</style>
     </>
   );
 };

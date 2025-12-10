@@ -124,9 +124,17 @@ export const MyPrayersScreen: React.FC = () => {
       ? 'bg-white/10 text-white hover:bg-white/20'
       : 'bg-gray-100 text-text-primary hover:bg-gray-200';
 
+    const cardShadow = isNight
+      ? 'shadow-[0_20px_60px_-20px_rgba(0,0,0,0.45)]'
+      : 'shadow-[0_15px_40px_-20px_rgba(0,0,0,0.2)]';
+
     return (
       <div className="relative w-full z-0 flex flex-col transition-all duration-500">
-        <div className={`${cardContainer} rounded-t-2xl rounded-b-none border-b-0 shadow-[0_20px_60px_-20px_rgba(199,139,74,0.35)] p-6 flex flex-col gap-1.5 relative`}>
+        <div
+          className={`${cardContainer} ${
+            isAnswered ? 'rounded-t-2xl rounded-b-none border-b' : 'rounded-2xl'
+          } ${cardShadow} p-6 flex flex-col gap-1.5 relative`}
+        >
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs opacity-50 uppercase tracking-wide font-bold">
@@ -150,7 +158,7 @@ export const MyPrayersScreen: React.FC = () => {
           </div>
 
           {prayer.title && (
-            <h3 className={`text-base font-semibold ${isNight ? 'text-white' : 'text-text-primary'}`}>
+            <h3 className={`text-base font-semibold ${isNight ? 'text-accent-pink' : 'text-accent-gold'}`}>
               {prayer.title}
             </h3>
           )}

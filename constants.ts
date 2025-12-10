@@ -74,3 +74,5 @@ export const STORAGE_KEYS = {
   DAILY_STATE: 'dpp_daily_state',
   ONBOARDING: 'dpp_onboarding_complete',
 };
+
+export { GUIDED_PRAYER_DAYS } from './data/guidedSteps';

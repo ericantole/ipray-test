@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
-import { PRAYER_STEPS } from '../constants';
 import { useApp } from '../contexts/AppContext';
+import { GUIDED_PRAYER_DAYS } from '../data/guidedSteps';
 
 export const PrayerFlowScreen: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
   const { theme } = useApp();
-  const isNight = theme === 'night';
-  const totalSteps = PRAYER_STEPS.length;
+  const isNight = theme === 'night' || (theme === 'auto' && (() => {
+    const hour = new Date().getHours();
+    return hour >= 20 || hour < 6;
+  })());
+
+  const session = useMemo(() => {
+    const today = new Date();
+    const index = (today.getDate() - 1) % GUIDED_PRAYER_DAYS.length;
+    const day = GUIDED_PRAYER_DAYS[index];
+    return isNight ? day.night : day.morning;
+  }, [isNight]);
+
+  const totalSteps = session.steps.length;
 
   const handleNext = () => {
     if (currentStep < totalSteps - 1) {
@@ -35,12 +46,14 @@ export const PrayerFlowScreen: React.FC = () => {
     <div className={`min-h-screen flex flex-col ${isNight ? 'bg-bg-night text-white' : 'bg-bg-light text-text-primary'}`}>
       
       {/* Top Bar */}
-      <div className="px-6 py-8 flex items-center justify-between">
+      <div className="px-6 py-6 flex items-center justify-between">
         <button onClick={() => navigate('/today')} className="p-2 -ml-2 opacity-60 hover:opacity-100">
           <X size={24} />
         </button>
-        <div className="text-sm font-medium opacity-60">Step {currentStep + 1} of {totalSteps}</div>
-        <div className="w-8" /> {/* Spacer */}
+        <div className="text-sm font-medium opacity-60">
+          Step {currentStep + 1} of {totalSteps}
+        </div>
+        <div className="w-8" />
       </div>
 
       {/* Progress Bar */}
@@ -51,13 +64,26 @@ export const PrayerFlowScreen: React.FC = () => {
         />
       </div>
 
+      {/* Voice toggle under progress bar */}
+      <div className="px-6 pt-3 pb-2 flex justify-end" />
+
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-fade-in key={currentStep}">
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-4 text-center animate-fade-in key={currentStep}">
         
         {/* Step Content */}
-        <h2 className="text-3xl md:text-4xl font-serif font-medium leading-tight mb-8 animate-slide-up">
-          {PRAYER_STEPS[currentStep]}
-        </h2>
+        <div className="space-y-3 max-w-xl">
+          <p className="text-xs uppercase tracking-[0.2em] font-semibold opacity-60">
+            {session.theme}
+          </p>
+          <h2 className="text-3xl sm:text-3xl md:text-4xl font-serif font-medium leading-tight animate-slide-up">
+            {session.steps[currentStep]}
+          </h2>
+          {isNight && session.scriptureLine && (
+            <p className="text-sm opacity-70 italic">
+              {session.scriptureLine}
+            </p>
+          )}
+        </div>
 
         {/* Optional decorative element */}
         <div className={`w-16 h-1 rounded-full opacity-20 mt-4 ${isNight ? 'bg-accent-pink' : 'bg-accent-gold'}`} />
