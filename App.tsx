@@ -15,7 +15,8 @@ import { SettingsScreen } from './screens/Settings';
 import { OnboardingScreen } from './screens/Onboarding';
 
 const App: React.FC = () => {
-  const isOnboardingComplete = StorageService.isOnboardingComplete();
+  // For preview: always show onboarding, comment out to use normal flow
+  const isOnboardingComplete = false; // StorageService.isOnboardingComplete();
 
   return (
     <AppProvider>

@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Check, MessageCircle } from 'lucide-react';
+import { ChevronRight, Check, MessageCircle, Heart, Pencil, ChevronDown, ChevronUp } from 'lucide-react';
 import { StorageService } from '../services/storage';
 import { PrayButton } from '../components/PrayButton';
 import { DayBackground, NightBackground } from '../components/Backgrounds';
@@ -214,16 +214,15 @@ export const OnboardingScreen: React.FC = () => {
 const WelcomeSlide = () => (
   <div className="relative flex flex-col items-center justify-center w-full h-full">
     {/* Message Bubble Box */}
-    <div className="bg-white/90 backdrop-blur-xl p-8 rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-white/60 relative w-full transform rotate-1">
+    <div className="bg-white/90 backdrop-blur-xl p-8 rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] border border-white/60 relative w-full">
       {/* Sender Icon */}
       <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-14 h-14 bg-gradient-to-br from-accent-gold to-orange-300 rounded-full flex items-center justify-center shadow-lg border-4 border-[#F7F7F4]">
          <MessageCircle className="w-7 h-7 text-white" fill="currentColor" />
       </div>
 
       <div className="pt-4 text-center">
-        {/* NO QUOTES in the string passed to TypewriterText to avoid the 'Y' issue */}
         <p className="font-serif text-2xl text-gray-800 leading-relaxed min-h-[90px] flex items-center justify-center italic">
-          "<TypewriterText text="You are loved. You are held. You are never alone." />"
+          <TypewriterText text={`"You are loved. You are held. You are never alone."`} />
         </p>
       </div>
 
@@ -251,37 +250,228 @@ const NightPreview = () => (
   </div>
 );
 
-const PrayerSpacePreview = () => (
-  <div className="w-full h-full flex items-center justify-center relative">
+const PrayerSpacePreview = () => {
+  const [showGratitudeStrip, setShowGratitudeStrip] = useState(false);
+  const [isGratitudeExpanded, setIsGratitudeExpanded] = useState(false);
+  const [gratitudeMessage, setGratitudeMessage] = useState('');
+  const [displayedText, setDisplayedText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const hasStartedTyping = useRef(false);
+  const displayedTextRef = useRef('');
+
+  // Show "Express Gratitude" strip after answered stamp appears
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowGratitudeStrip(true);
+    }, 1900); // After answered stamp animation completes
+    
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Update ref when displayedText changes
+  useEffect(() => {
+    displayedTextRef.current = displayedText;
+  }, [displayedText]);
+
+  // Define functions first - use ref to avoid dependency issues
+  const handleSaveGratitude = useCallback(() => {
+    setIsSaved(true);
+    setGratitudeMessage(displayedTextRef.current);
+    // After save, collapse back to strip
+    setTimeout(() => {
+      setIsGratitudeExpanded(false);
+    }, 500);
+  }, []);
+
+  const handleExpandGratitude = () => {
+    setIsGratitudeExpanded(true);
+    if (isSaved && gratitudeMessage) {
+      // Show saved message immediately
+      setDisplayedText(gratitudeMessage);
+      setIsTyping(false);
+    }
+    // If not saved, don't reset displayedText - let typewriter effect handle it
+  };
+
+  const handleCollapseGratitude = () => {
+    setIsGratitudeExpanded(false);
+  };
+
+  // Auto-expand and start typing after strip appears (only once)
+  useEffect(() => {
+    if (showGratitudeStrip && !isGratitudeExpanded && !isSaved) {
+      const timer = setTimeout(() => {
+        handleExpandGratitude();
+      }, 1000); // Wait 1 second after strip appears
+      return () => clearTimeout(timer);
+    }
+  }, [showGratitudeStrip, isSaved, isGratitudeExpanded]);
+
+  // Typewriter effect for gratitude message (only when expanding for first time)
+  useEffect(() => {
+    if (isGratitudeExpanded && !isSaved && gratitudeMessage === '' && !hasStartedTyping.current) {
+      hasStartedTyping.current = true;
+      // Shorter message (2-3 lines)
+      const fullMessage = "Thank you, Lord, for hearing my prayer about those test results. I was so worried waiting, but You gave me such peace in my heart. I trust You completely, no matter what comes next.";
+      
+      setIsTyping(true);
+      setDisplayedText('');
+      displayedTextRef.current = '';
+      let i = 0;
+      
+      const timer = setInterval(() => {
+        if (i < fullMessage.length) {
+          const newText = fullMessage.substring(0, i + 1);
+          setDisplayedText(newText);
+          displayedTextRef.current = newText;
+          i++;
+        } else {
+          setIsTyping(false);
+          clearInterval(timer);
+        }
+      }, 60); // Slower typing speed
+      
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [isGratitudeExpanded, isSaved, gratitudeMessage]);
+
+  // Auto-click save button after typing completes
+  useEffect(() => {
+    if (!isTyping && displayedText.length > 0 && !isSaved && isGratitudeExpanded) {
+      // Wait 1 second after typing completes, then auto-click save button
+      const timer = setTimeout(() => {
+        handleSaveGratitude();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [isTyping, displayedText, isSaved, isGratitudeExpanded, handleSaveGratitude]);
+
+  return (
+    <div className="w-full flex flex-col items-center justify-center relative">
      
      {/* Background Pile of Cards (Layered/Folder Effect) */}
      {/* Layer 3 (Bottom) - Transparent */}
-     <div className="absolute w-[80%] h-36 bg-white/20 border border-white/30 rounded-xl transform -translate-y-8 scale-90 shadow-sm z-0"></div>
+     <div className="absolute w-[80%] h-36 bg-white/20 border border-white/30 rounded-xl transform -translate-y-8 scale-90 shadow-sm z-0 top-1/2 -translate-y-1/2"></div>
      {/* Layer 2 (Middle) - Semi Transparent */}
-     <div className="absolute w-[88%] h-36 bg-white/40 border border-white/40 rounded-xl transform -translate-y-5 scale-95 shadow-sm z-10"></div>
+     <div className="absolute w-[88%] h-36 bg-white/40 border border-white/40 rounded-xl transform -translate-y-5 scale-95 shadow-sm z-10 top-1/2 -translate-y-1/2"></div>
      
-     {/* Main Active Card */}
-     <div className="relative w-full bg-white border border-white/80 rounded-xl shadow-2xl p-6 z-20 flex flex-col justify-between min-h-[160px]">
-        <div className="flex justify-between items-start mb-2">
-            <span className="text-xs opacity-50 uppercase tracking-wide font-bold">My Prayer • Just now</span>
-        </div>
-        
-        {/* Text with Delayed Blur */}
-        <p className="font-serif text-lg leading-relaxed text-gray-800 animate-[blurIn_1s_ease-out_1.2s_forwards]">
-            Lord, please let the test results be clear tomorrow. Give me strength while I wait.
-        </p>
+     {/* Main Active Card with Gratitude Box attached */}
+     <div className="relative w-full z-20 flex flex-col">
+        {/* Prayer Card */}
+        <div className="bg-white border border-white/80 rounded-t-2xl shadow-2xl p-6 flex flex-col justify-between min-h-[160px] relative">
+          <div className="flex justify-between items-start mb-2">
+              <span className="text-xs opacity-50 uppercase tracking-wide font-bold">My Prayer • Just now</span>
+          </div>
+          
+          {/* Text with Delayed Blur */}
+          <p className="font-serif text-lg leading-relaxed text-gray-800 animate-[blurIn_1s_ease-out_1.2s_forwards]">
+              Lord, please let the test results be clear tomorrow. Give me strength while I wait.
+          </p>
 
-        {/* Answered Stamp Overlay */}
-        <div 
-            className="absolute inset-0 flex items-center justify-center rounded-xl z-30 pointer-events-none"
-        >
-            <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full shadow-[0_10px_30px_rgba(199,139,74,0.3)] flex items-center gap-2 text-accent-gold font-bold border border-accent-gold/20 transform scale-0 animate-[popIn_0.5s_cubic-bezier(0.175,0.885,0.32,1.275)_1.4s_forwards]">
-                <div className="bg-accent-gold rounded-full p-1">
-                  <Check size={16} strokeWidth={4} className="text-white" />
-                </div>
-                <span className="tracking-wide text-lg">Answered</span>
-            </div>
+          {/* Answered Stamp Overlay - Fixed position within prayer card */}
+          <div 
+              className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center rounded-t-2xl z-30 pointer-events-none"
+          >
+              <div className="bg-white/95 backdrop-blur-sm px-6 py-3 rounded-full shadow-[0_10px_30px_rgba(199,139,74,0.3)] flex items-center gap-2 text-accent-gold font-bold border border-accent-gold/20 transform scale-0 animate-[popIn_0.5s_cubic-bezier(0.175,0.885,0.32,1.275)_1.4s_forwards]">
+                  <div className="bg-accent-gold rounded-full p-1">
+                    <Check size={16} strokeWidth={4} className="text-white" />
+                  </div>
+                  <span className="tracking-wide text-lg">Answered</span>
+              </div>
+          </div>
         </div>
+
+        {/* Separator Line - Between prayer card and gratitude section */}
+        {showGratitudeStrip && (
+          <div className="w-full h-[1px] bg-gray-200/60 z-25"></div>
+        )}
+
+        {/* Gratitude Strip - Small rectangle attached below */}
+        {showGratitudeStrip && !isGratitudeExpanded && (
+          <div 
+            onClick={handleExpandGratitude}
+            className="bg-gradient-to-br from-accent-goldLight to-white border-x-2 border-b-2 border-accent-gold/30 rounded-b-2xl shadow-lg -mt-px z-30 cursor-pointer hover:bg-accent-goldLight/80 transition-colors animate-[slideUp_0.4s_ease-out_forwards]"
+          >
+            <div className="px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Heart size={16} className="text-accent-gold" fill="currentColor" />
+                <span className="text-xs font-bold tracking-wider text-accent-gold uppercase">
+                  {isSaved ? 'Gratitude Message' : 'Express Gratitude'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                {isSaved && (
+                  <span className="text-xs text-gray-500 italic line-clamp-1 max-w-[200px]">
+                    {gratitudeMessage.substring(0, 40)}...
+                  </span>
+                )}
+                <ChevronDown size={18} className="text-accent-gold" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Expanded Gratitude Message Box */}
+        {isGratitudeExpanded && (
+          <div className="bg-gradient-to-br from-accent-goldLight to-white border-x-2 border-b-2 border-accent-gold/30 rounded-b-2xl shadow-xl -mt-px z-30 animate-[slideUp_0.5s_ease-out_forwards] relative">
+            <div className="p-6">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-1 w-8 bg-accent-gold rounded-full"></div>
+                  <span className="text-xs font-bold tracking-wider text-accent-gold uppercase">Gratitude Message</span>
+                </div>
+                <button
+                  onClick={handleCollapseGratitude}
+                  className="text-accent-gold hover:text-yellow-600 transition-colors p-1 active:scale-95"
+                  aria-label="Collapse gratitude message"
+                >
+                  <ChevronUp size={18} />
+                </button>
+              </div>
+              
+              {/* Text Display Area - Smaller for 2-3 lines */}
+              <div className="min-h-[80px] mb-3">
+                <p className="font-serif text-sm leading-relaxed text-gray-800 italic">
+                  {displayedText}
+                  {isTyping && <span className="animate-pulse">|</span>}
+                </p>
+              </div>
+
+              {/* Save Button - Bottom right when not saved */}
+              {!isSaved && (
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveGratitude}
+                    className="bg-accent-gold text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:bg-yellow-600 transition-colors flex items-center gap-2 active:scale-95 animate-[slideUp_0.3s_ease-out_forwards]"
+                  >
+                    <Check size={18} strokeWidth={3} />
+                    <span>Save</span>
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Edit Icon - Fixed to exact bottom right corner of gratitude box */}
+            {isSaved && (
+              <button
+                onClick={() => {
+                  setIsSaved(false);
+                  setIsGratitudeExpanded(true);
+                  setDisplayedText(gratitudeMessage);
+                  hasStartedTyping.current = false;
+                }}
+                className="absolute bottom-0 right-0 bg-accent-goldLight hover:bg-accent-gold/20 text-accent-gold p-2.5 rounded-tl-full rounded-br-2xl shadow-md transition-colors active:scale-95 animate-[slideUp_0.3s_ease-out_forwards] z-40 border border-accent-gold/20"
+                aria-label="Edit gratitude message"
+              >
+                <Pencil size={18} strokeWidth={2.5} />
+              </button>
+            )}
+          </div>
+        )}
     </div>
     
     <style>{`
@@ -294,6 +484,11 @@ const PrayerSpacePreview = () => (
         80% { transform: scale(1.1); opacity: 1; }
         100% { transform: scale(1); opacity: 1; }
       }
+      @keyframes slideUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     `}</style>
   </div>
-);
+  );
+};
